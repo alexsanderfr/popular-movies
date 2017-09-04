@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Popular Movies</string>
+    <string name="sorting_prompt">Choose a sorting method</string>
+    <string name="action_refresh">Refresh</string>
+    <string name="connectivity_error">An error occurred, maybe you should check your internet connectivity?</string>
+    <string name="spinner">Spinner</string>
+    <string-array name="sorting_array">
+        <item>Popularity</item>
+        <item>Top rated</item>
+    </string-array>
+</resources>
