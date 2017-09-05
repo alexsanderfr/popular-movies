@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -12,7 +14,6 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,9 +22,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 
+import com.example.popularmovies.model.MovieParcelable;
 import com.example.popularmovies.utilities.MovieDbJsonUtils;
 import com.example.popularmovies.utilities.NetworkUtils;
-import com.example.popularmovies.utilities.Utils;
 
 import org.json.JSONException;
 
@@ -69,6 +70,15 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setPrompt(getString(R.string.sorting_prompt));
+
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        String key = getString(R.string.sorting_method);
+        String sortingMethod = sharedPref.getString(key, "popular");
+        if (sortingMethod.equals("popular")) {
+            spinner.setSelection(0);
+        } else if (sortingMethod.equals("top_rated")) {
+            spinner.setSelection(1);
+        }
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -111,8 +121,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     @Override
     public void onClick(String position) {
+        MovieParcelable movieParcelable = new MovieParcelable();
+        movieParcelable.setId(mMovieIdsArray[Integer.parseInt(position)]);
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(Intent.EXTRA_TEXT, mMovieIdsArray[Integer.parseInt(position)]);
+        intent.putExtra(Intent.EXTRA_TEXT, movieParcelable);
         startActivity(intent);
     }
 
@@ -129,10 +141,12 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
         @Override
         protected String[] doInBackground(String... params) {
-            if (Utils.isOnline(MainActivity.this)) {
+            ConnectivityManager cm =
+                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            if (netInfo != null && netInfo.isConnectedOrConnecting()) {
                 try {
                     URL url = NetworkUtils.buildUrlForDiscover(params[0]);
-                    Log.i("Built url", url.toString());
                     String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
                     mMovieIdsArray = MovieDbJsonUtils.getMovieIdsFromJson(jsonResponse);
                     return MovieDbJsonUtils

@@ -1,7 +1,10 @@
 package com.example.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -14,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.popularmovies.model.MovieParcelable;
 import com.example.popularmovies.utilities.MovieDbJsonUtils;
 import com.example.popularmovies.utilities.NetworkUtils;
 import com.example.popularmovies.utilities.Utils;
@@ -23,11 +27,10 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.HashMap;
 
 public class DetailActivity extends AppCompatActivity {
 
-    private String mMovieId;
+    private MovieParcelable movieParcelable;
     private ProgressBar mLoadingIndicator;
 
     @Override
@@ -39,7 +42,7 @@ public class DetailActivity extends AppCompatActivity {
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         if (intent != null) {
             if (intent.hasExtra(Intent.EXTRA_TEXT)) {
-                mMovieId = intent.getStringExtra(Intent.EXTRA_TEXT);
+                movieParcelable = intent.getParcelableExtra(Intent.EXTRA_TEXT);
                 loadMovieDetailData();
 
             }
@@ -47,7 +50,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void loadMovieDetailData() {
-        new FetchMovieDetailTask().execute(mMovieId);
+        new FetchMovieDetailTask().execute(movieParcelable.getId());
     }
 
     @Override
@@ -79,7 +82,7 @@ public class DetailActivity extends AppCompatActivity {
 
     }
 
-    private class FetchMovieDetailTask extends AsyncTask<String, Object, HashMap<String, String>> {
+    private class FetchMovieDetailTask extends AsyncTask<String, Object, MovieParcelable> {
 
         @Override
         protected void onPreExecute() {
@@ -91,8 +94,11 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected HashMap<String, String> doInBackground(String... params) {
-            if (Utils.isOnline(DetailActivity.this)) {
+        protected MovieParcelable doInBackground(String... params) {
+            ConnectivityManager cm =
+                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            if (netInfo != null && netInfo.isConnectedOrConnecting()) {
                 try {
                     URL url = NetworkUtils.buildUrlForMovieDetail(params[0]);
                     String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
@@ -108,20 +114,19 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(HashMap<String, String> result) {
+        protected void onPostExecute(MovieParcelable result) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (result != null) {
-                setTitle(result.get(MovieDbJsonUtils.OWM_MESSAGE_TITLE));
+                setTitle(result.getTitle());
                 ImageView posterImageView = (ImageView) findViewById(R.id.iv_movie_poster_detail);
                 Picasso.with(DetailActivity.this).load(Utils.getImageSize(getResources()
-                        .getDisplayMetrics().density, result
-                        .get(MovieDbJsonUtils.OWM_POSTER_PATH))).into(posterImageView);
+                        .getDisplayMetrics().density, result.getPosterPath())).into(posterImageView);
                 TextView overviewTextView = (TextView) findViewById(R.id.tv_overview);
-                overviewTextView.setText(result.get(MovieDbJsonUtils.OWM_MESSAGE_PLOT));
+                overviewTextView.setText(result.getPlot());
                 TextView yearTextView = (TextView) findViewById(R.id.tv_year);
-                yearTextView.setText(result.get(MovieDbJsonUtils.OWM_MESSAGE_DATE));
+                yearTextView.setText(result.getDate());
                 TextView ratingTextView = (TextView) findViewById(R.id.tv_rating);
-                ratingTextView.setText(result.get(MovieDbJsonUtils.OWM_MESSAGE_RATING));
+                ratingTextView.setText(result.getRating());
             } else {
                 View view = findViewById(android.R.id.content);
                 Snackbar.make(view, getString(R.string.connectivity_error), Snackbar.LENGTH_SHORT)

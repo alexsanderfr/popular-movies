@@ -1,25 +1,17 @@
 package com.example.popularmovies.utilities;
 
+import com.example.popularmovies.model.MovieParcelable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class MovieDbJsonUtils {
     private static final String TAG = MovieDbJsonUtils.class.getSimpleName();
-
-    public static final String OWM_MESSAGE_TITLE = "original_title";
-    public static final String OWM_MESSAGE_PLOT = "overview";
-    public static final String OWM_MESSAGE_DATE = "release_date";
-    public static final String OWM_MESSAGE_RATING = "vote_average";
-    public static final String OWM_POSTER_PATH = "poster_path";
-    public static final String OWM_MESSAGE_CODE = "cod";
-    public static final String OWM_RESULTS = "results";
-    public static final String OWM_ID = "id";
 
     public static String[] getPostersStringsFromJson(String moviesJsonStr)
             throws JSONException {
@@ -88,7 +80,7 @@ public class MovieDbJsonUtils {
         return movieIds.toArray(new String[0]);
     }
 
-    public static HashMap<String, String> getMovieDetailFromJson(String moviesJsonStr)
+    public static MovieParcelable getMovieDetailFromJson(String moviesJsonStr)
             throws JSONException {
         final String OWM_MESSAGE_CODE = "cod";
         final String OWM_MESSAGE_TITLE = "original_title";
@@ -114,13 +106,14 @@ public class MovieDbJsonUtils {
             }
         }
 
-        HashMap<String, String> hashMapResult = new HashMap<>();
-        hashMapResult.put(OWM_MESSAGE_TITLE, moviesJson.getString(OWM_MESSAGE_TITLE));
-        hashMapResult.put(OWM_MESSAGE_PLOT, moviesJson.getString(OWM_MESSAGE_PLOT));
-        hashMapResult.put(OWM_MESSAGE_DATE, moviesJson.getString(OWM_MESSAGE_DATE));
-        hashMapResult.put(OWM_MESSAGE_RATING, moviesJson.getString(OWM_MESSAGE_RATING));
+        MovieParcelable movieParcelable = new MovieParcelable();
+        movieParcelable.setTitle(moviesJson.getString(OWM_MESSAGE_TITLE));
+        movieParcelable.setDate(moviesJson.getString(OWM_MESSAGE_DATE));
+        movieParcelable.setPlot(moviesJson.getString(OWM_MESSAGE_PLOT));
+        movieParcelable.setRating(moviesJson.getString(OWM_MESSAGE_RATING));
         String posterUrl = BASE_POSTER_URL + POSTER_SIZE + moviesJson.getString(OWM_POSTER_PATH);
-        hashMapResult.put(OWM_POSTER_PATH, posterUrl);
-        return hashMapResult;
+        movieParcelable.setPosterPath(posterUrl);
+
+        return movieParcelable;
     }
 }
