@@ -4,6 +4,7 @@
     <string name="action_refresh">Refresh</string>
     <string name="connectivity_error">An error occurred, maybe you should check your internet connectivity?</string>
     <string name="spinner">Spinner</string>
+    <string name="sorting_method">Sorting method</string>
     <string-array name="sorting_array">
         <item>Popularity</item>
         <item>Top rated</item>

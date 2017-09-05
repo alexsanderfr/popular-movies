@@ -14,16 +14,13 @@ public class NetworkUtils {
 
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
-    private static final String MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/";
-    private static final String MOVIE_POSTER_BASE_URL = MOVIE_DB_BASE_URL + "discover/movie";
-    private static final String MOVIE_DETAIL_BASE_URL = MOVIE_DB_BASE_URL + "movie/";
+    private static final String MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie/";
     private final static String API_PARAM = "api_key";
-    private final static String SORTING_PARAM = "sort_by";
 
     public static URL buildUrlForDiscover(String sortingMethod) {
-        Uri uri = Uri.parse(MOVIE_POSTER_BASE_URL).buildUpon()
+        String  baseUrl = MOVIE_DB_BASE_URL.concat(sortingMethod);
+        Uri uri = Uri.parse(baseUrl).buildUpon()
                 .appendQueryParameter(API_PARAM, Utils.getApiKey())
-                .appendQueryParameter(SORTING_PARAM, sortingMethod)
                 .build();
 
         URL url = null;
@@ -36,7 +33,7 @@ public class NetworkUtils {
     }
 
     public static URL buildUrlForMovieDetail(String movieId) {
-        Uri uri = Uri.parse(MOVIE_DETAIL_BASE_URL + movieId).buildUpon()
+        Uri uri = Uri.parse(MOVIE_DB_BASE_URL + movieId).buildUpon()
                 .appendQueryParameter(API_PARAM, Utils.getApiKey())
                 .build();
 

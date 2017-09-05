@@ -1,6 +1,8 @@
 package com.example.popularmovies;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.PorterDuff;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,6 +12,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private MoviesAdapter mMoviesAdapter;
     private String[] mMovieIdsArray = null;
-    private String mSortingMethod;
     private ProgressBar mLoadingIndicator;
 
     @Override
@@ -49,7 +51,10 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
     }
 
     private void loadMoviePostersData() {
-        new FetchMoviePostersTask().execute(mSortingMethod);
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        String key = getString(R.string.sorting_method);
+        String sortingMethod = sharedPref.getString(key, "popular");
+        new FetchMoviePostersTask().execute(sortingMethod);
     }
 
     @Override
@@ -68,14 +73,17 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 mMoviesAdapter.setPostersData(null);
+                SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
                 switch (spinner.getSelectedItem().toString()) {
                     case "Popularity":
-                        mSortingMethod = "popularity.desc";
+                        editor.putString(getString(R.string.sorting_method), "popular");
                         break;
                     case "Top rated":
-                        mSortingMethod = "vote_average.desc";
+                        editor.putString(getString(R.string.sorting_method), "top_rated");
                         break;
                 }
+                editor.apply();
                 loadMoviePostersData();
 
             }
@@ -124,6 +132,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             if (Utils.isOnline(MainActivity.this)) {
                 try {
                     URL url = NetworkUtils.buildUrlForDiscover(params[0]);
+                    Log.i("Built url", url.toString());
                     String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
                     mMovieIdsArray = MovieDbJsonUtils.getMovieIdsFromJson(jsonResponse);
                     return MovieDbJsonUtils
