@@ -15,7 +15,21 @@ public class NetworkUtils {
     private static final String TAG = NetworkUtils.class.getSimpleName();
 
     private static final String MOVIE_DB_BASE_URL = "https://api.themoviedb.org/3/movie/";
-    private final static String API_PARAM = "api_key";
+    private static final String MOVIE_DB_VIDEO_PATH = "/videos";
+    private static final String API_PARAM = "api_key";
+    private static final String YOUTUBE_BASE_URL = "https://www.youtube.com/watch";
+    private static final String VIDEO_PARAM = "v";
+
+    public static Uri buildUriForVideoIntent(String site, String key){
+        switch (site) {
+            case "YouTube":
+                Uri uri = Uri.parse(YOUTUBE_BASE_URL).buildUpon()
+                        .appendQueryParameter(VIDEO_PARAM, key)
+                        .build();
+                return uri;
+        }
+        return null;
+    }
 
     public static URL buildUrlForDiscover(String sortingMethod) {
         String  baseUrl = MOVIE_DB_BASE_URL.concat(sortingMethod);
@@ -33,10 +47,24 @@ public class NetworkUtils {
     }
 
     public static URL buildUrlForMovieDetail(String movieId) {
-        Uri uri = Uri.parse(MOVIE_DB_BASE_URL + movieId).buildUpon()
+        Uri uri = Uri.parse(MOVIE_DB_BASE_URL.concat(movieId)).buildUpon()
                 .appendQueryParameter(API_PARAM, Utils.getApiKey())
                 .build();
 
+        URL url = null;
+        try {
+            url = new URL(uri.toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return url;
+    }
+
+    public static URL buildUrlForMovieVideos(String movieId) {
+        String baseUri = MOVIE_DB_BASE_URL.concat(movieId).concat(MOVIE_DB_VIDEO_PATH);
+        Uri uri = Uri.parse(baseUri).buildUpon()
+                .appendQueryParameter(API_PARAM, Utils.getApiKey())
+                .build();
         URL url = null;
         try {
             url = new URL(uri.toString());

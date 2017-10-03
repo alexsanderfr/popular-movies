@@ -5,6 +5,7 @@
     <string name="connectivity_error">An error occurred, maybe you should check your internet connectivity?</string>
     <string name="spinner">Spinner</string>
     <string name="sorting_method">Sorting method</string>
+    <string name="tv_video_dev_name">Trailer 1</string>
     <string-array name="sorting_array">
         <item>Popularity</item>
         <item>Top rated</item>

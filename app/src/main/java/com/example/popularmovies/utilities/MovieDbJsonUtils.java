@@ -1,6 +1,7 @@
 package com.example.popularmovies.utilities;
 
 import com.example.popularmovies.model.MovieParcelable;
+import com.example.popularmovies.model.Video;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -115,5 +116,47 @@ public class MovieDbJsonUtils {
         movieParcelable.setPosterPath(posterUrl);
 
         return movieParcelable;
+    }
+
+    public static Video[] getMovieVideosFromJson (String moviesJsonStr) throws JSONException {
+        final String OWM_MESSAGE_CODE = "cod";
+        final String OWM_RESULTS = "results";
+        final String OWM_KEY = "key";
+        final String OWM_SITE = "site";
+        final String OWM_NAME = "name";
+
+        ArrayList<Video> videos = new ArrayList<>();
+        JSONObject videosJson = new JSONObject(moviesJsonStr);
+
+        if (videosJson.has(OWM_MESSAGE_CODE)) {
+            int errorCode = videosJson.getInt(OWM_MESSAGE_CODE);
+
+            switch (errorCode) {
+                case HttpURLConnection.HTTP_OK:
+                    break;
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    return null;
+                default:
+                    return null;
+            }
+        }
+
+        JSONArray videoResults = videosJson.getJSONArray(OWM_RESULTS);
+
+        for (int i = 0; i < videoResults.length(); i++) {
+            JSONObject videoJson = videoResults.getJSONObject(i);
+            String key = videoJson.getString(OWM_KEY);
+            String site = videoJson.getString(OWM_SITE);
+            String name = videoJson.getString(OWM_NAME);
+            Video video = new Video(name, key, site);
+            videos.add(video);
+        }
+
+        Video[] videoArray = new Video[videos.size()];
+        for (int i =0; i<videos.size(); i++) {
+            videoArray[i] = videos.get(i);
+        }
+
+        return videoArray;
     }
 }
