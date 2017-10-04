@@ -22,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.Spinner;
 
+import com.example.popularmovies.adapter.MoviesAdapter;
 import com.example.popularmovies.model.MovieParcelable;
 import com.example.popularmovies.utilities.MovieDbJsonUtils;
 import com.example.popularmovies.utilities.NetworkUtils;

@@ -1,4 +1,4 @@
-package com.example.popularmovies;
+package com.example.popularmovies.adapter;
 
 
 import android.content.Context;
@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.popularmovies.R;
 import com.example.popularmovies.model.Video;
 
 public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewHolder>{
@@ -24,7 +25,7 @@ public class VideosAdapter extends RecyclerView.Adapter<VideosAdapter.VideoViewH
         mOnClickHandler = onClickHandler;
     }
     @Override
-    public VideosAdapter.VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public VideoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         int layoutIdForListItem = R.layout.movie_video_list_item;
 

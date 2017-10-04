@@ -1,6 +1,7 @@
 package com.example.popularmovies.utilities;
 
 import com.example.popularmovies.model.MovieParcelable;
+import com.example.popularmovies.model.Review;
 import com.example.popularmovies.model.Video;
 
 import org.json.JSONArray;
@@ -158,5 +159,45 @@ public class MovieDbJsonUtils {
         }
 
         return videoArray;
+    }
+
+    public static Review[] getMovieReviewsFromJson (String moviesJsonStr) throws JSONException {
+        final String OWM_MESSAGE_CODE = "cod";
+        final String OWM_RESULTS = "results";
+        final String OWM_AUTHOR = "author";
+        final String OWM_CONTENT = "content";
+
+        ArrayList<Review> reviews = new ArrayList<>();
+        JSONObject reviewsJson = new JSONObject(moviesJsonStr);
+
+        if (reviewsJson.has(OWM_MESSAGE_CODE)) {
+            int errorCode = reviewsJson.getInt(OWM_MESSAGE_CODE);
+
+            switch (errorCode) {
+                case HttpURLConnection.HTTP_OK:
+                    break;
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    return null;
+                default:
+                    return null;
+            }
+        }
+
+        JSONArray reviewResults = reviewsJson.getJSONArray(OWM_RESULTS);
+
+        for (int i = 0; i < reviewResults.length(); i++) {
+            JSONObject reviewJson = reviewResults.getJSONObject(i);
+            String author = reviewJson.getString(OWM_AUTHOR);
+            String content = reviewJson.getString(OWM_CONTENT);
+            Review review = new Review(author, content);
+            reviews.add(review);
+        }
+
+        Review[] reviewArray = new Review[reviews.size()];
+        for (int i=0; i<reviews.size(); i++) {
+            reviewArray[i] = reviews.get(i);
+        }
+
+        return reviewArray;
     }
 }

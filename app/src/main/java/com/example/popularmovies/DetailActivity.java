@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -20,7 +21,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.popularmovies.adapter.ReviewsAdapter;
+import com.example.popularmovies.adapter.VideosAdapter;
 import com.example.popularmovies.model.MovieParcelable;
+import com.example.popularmovies.model.Review;
 import com.example.popularmovies.model.Video;
 import com.example.popularmovies.utilities.MovieDbJsonUtils;
 import com.example.popularmovies.utilities.NetworkUtils;
@@ -32,11 +36,12 @@ import org.json.JSONException;
 import java.io.IOException;
 import java.net.URL;
 
-public class DetailActivity extends AppCompatActivity implements VideosAdapter.VideosAdapterOnClickHandler{
+public class DetailActivity extends AppCompatActivity implements VideosAdapter.VideosAdapterOnClickHandler {
 
     private MovieParcelable movieParcelable;
     private ProgressBar mLoadingIndicator;
     private VideosAdapter mVideosAdapter;
+    private ReviewsAdapter mReviewsAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,18 +58,26 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
             }
         }
 
-        RecyclerView videosRecyclerView =  (RecyclerView) findViewById(R.id.rv_movie_videos);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
-        videosRecyclerView.setLayoutManager(layoutManager);
+        RecyclerView videosRecyclerView = (RecyclerView) findViewById(R.id.rv_movie_videos);
+        RecyclerView.LayoutManager videosLayoutManager = new LinearLayoutManager(this);
+        videosRecyclerView.setLayoutManager(videosLayoutManager);
         videosRecyclerView.setNestedScrollingEnabled(false);
         mVideosAdapter = new VideosAdapter(this, this);
         videosRecyclerView.setAdapter(mVideosAdapter);
+
+        RecyclerView reviewsRecyclerView = (RecyclerView) findViewById(R.id.rv_movie_reviews);
+        RecyclerView.LayoutManager reviewsLayoutManager = new LinearLayoutManager(this);
+        reviewsRecyclerView.setLayoutManager(reviewsLayoutManager);
+        reviewsRecyclerView.setNestedScrollingEnabled(false);
+        mReviewsAdapter = new ReviewsAdapter(this);
+        reviewsRecyclerView.setAdapter(mReviewsAdapter);
     }
 
     private void loadMovieDetailData() {
         String movieId = movieParcelable.getId();
         new FetchMovieDetailTask().execute(movieId);
         new FetchMovieVideosTask().execute(movieId);
+        new FetchMovieReviewsTask().execute(movieId);
     }
 
     @Override
@@ -184,6 +197,39 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
         protected void onPostExecute(Video[] result) {
             if (result != null) {
                 mVideosAdapter.setVideos(result);
+            } else {
+                View view = findViewById(android.R.id.content);
+                Snackbar.make(view, getString(R.string.connectivity_error), Snackbar.LENGTH_SHORT)
+                        .show();
+            }
+        }
+    }
+
+    private class FetchMovieReviewsTask extends AsyncTask<String, Object, Review[]> {
+        @Override
+        protected Review[] doInBackground(String... params) {
+            ConnectivityManager cm =
+                    (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo netInfo = cm.getActiveNetworkInfo();
+            if (netInfo != null && netInfo.isConnectedOrConnecting()) {
+                try {
+                    URL url = NetworkUtils.buildUrlForMovieReviews(params[0]);
+                    String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
+                    return MovieDbJsonUtils.getMovieReviewsFromJson(jsonResponse);
+
+                } catch (JSONException | IOException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Review[] result) {
+            if (result != null) {
+                mReviewsAdapter.setReviews(result);
             } else {
                 View view = findViewById(android.R.id.content);
                 Snackbar.make(view, getString(R.string.connectivity_error), Snackbar.LENGTH_SHORT)

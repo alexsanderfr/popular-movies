@@ -34,11 +34,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="8dp"
-                android:layout_marginLeft="8dp"
-                android:layout_marginRight="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp"
                 android:gravity="center"
                 android:orientation="vertical">
 
@@ -46,14 +43,14 @@
                     android:id="@+id/tv_year"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="24sp" />
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
 
 
                 <TextView
                     android:id="@+id/tv_rating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="24sp" />
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
 
             </LinearLayout>
         </LinearLayout>
@@ -62,11 +59,17 @@
             android:id="@+id/tv_overview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
             android:padding="8dp"
             android:textSize="18sp" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_movie_videos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_movie_reviews"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
