@@ -39,6 +39,24 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
+                <Button
+                    android:id="@+id/bt_favorite"
+                    android:onClick="onClickFavorite"
+                    android:textColor="@android:color/black"
+                    android:text="@string/bt_favorite"
+                    android:layout_width="wrap_content"
+                    android:visibility="gone"
+                    android:layout_height="wrap_content" />
+
+                <Button
+                    android:id="@+id/bt_unfavorite"
+                    android:visibility="gone"
+                    android:textColor="@android:color/black"
+                    android:onClick="onClickUnfavorite"
+                    android:text="@string/bt_unfavorite"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
                 <TextView
                     android:id="@+id/tv_year"
                     android:layout_width="wrap_content"

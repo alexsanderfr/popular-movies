@@ -1,7 +1,9 @@
 package com.example.popularmovies;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -11,18 +13,20 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.popularmovies.adapter.ReviewsAdapter;
 import com.example.popularmovies.adapter.VideosAdapter;
+import com.example.popularmovies.data.MovieContract;
 import com.example.popularmovies.model.MovieParcelable;
 import com.example.popularmovies.model.Review;
 import com.example.popularmovies.model.Video;
@@ -38,6 +42,8 @@ import java.net.URL;
 
 public class DetailActivity extends AppCompatActivity implements VideosAdapter.VideosAdapterOnClickHandler {
 
+
+    private static final String TAG = DetailActivity.class.getSimpleName() + "dbg";
     private MovieParcelable movieParcelable;
     private ProgressBar mLoadingIndicator;
     private VideosAdapter mVideosAdapter;
@@ -71,6 +77,41 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
         reviewsRecyclerView.setNestedScrollingEnabled(false);
         mReviewsAdapter = new ReviewsAdapter(this);
         reviewsRecyclerView.setAdapter(mReviewsAdapter);
+
+        existsOnDb();
+    }
+
+    private void existsOnDb() {
+        final String movieId = movieParcelable.getId();
+        final Button favoriteButton = (Button) findViewById(R.id.bt_favorite);
+        final Button unfavoriteButton = (Button) findViewById(R.id.bt_unfavorite);
+        AsyncTask asyncTask = new AsyncTask<Object, Void, Cursor>() {
+            @Override
+            protected Cursor doInBackground(Object... params) {
+                try {
+                    return getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
+                            null,
+                            "movie_id=?",
+                            new String[]{movieId},
+                            null);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Cursor result) {
+                if ((result != null) && result.getCount() > 0) {
+                    favoriteButton.setVisibility(View.GONE);
+                    unfavoriteButton.setVisibility(View.VISIBLE);
+                } else {
+                    unfavoriteButton.setVisibility(View.GONE);
+                    favoriteButton.setVisibility(View.VISIBLE);
+                }
+            }
+        };
+        asyncTask.execute(movieId);
     }
 
     private void loadMovieDetailData() {
@@ -117,6 +158,30 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
         intent.setData(link);
         startActivity(intent);
     }
+
+    public void onClickFavorite(View view) {
+        String movieId = movieParcelable.getId();
+
+        Button favoriteButton = (Button) view;
+        Button unfavoriteButton = (Button) findViewById(R.id.bt_unfavorite);
+        Uri uri = MovieContract.MovieEntry.CONTENT_URI;
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(MovieContract.MovieEntry.COLUMN_MOVIE_ID, movieId);
+        getContentResolver().insert(uri, contentValues);
+        unfavoriteButton.setVisibility(View.VISIBLE);
+        favoriteButton.setVisibility(View.GONE);
+    }
+
+    public void onClickUnfavorite(View view) {
+        String movieId = movieParcelable.getId();
+        Button favoriteButton = (Button) findViewById(R.id.bt_favorite);
+        Button unfavoriteButton = (Button) view;
+        Uri uri = MovieContract.MovieEntry.CONTENT_URI;
+        getContentResolver().delete(uri, "movie_id=?", new String[]{movieId});
+        unfavoriteButton.setVisibility(View.GONE);
+        favoriteButton.setVisibility(View.VISIBLE);
+    }
+
 
     private class FetchMovieDetailTask extends AsyncTask<String, Object, MovieParcelable> {
 
