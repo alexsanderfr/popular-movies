@@ -5,11 +5,14 @@
     <string name="connectivity_error">An error occurred, maybe you should check your internet connectivity?</string>
     <string name="spinner">Spinner</string>
     <string name="sorting_method">Sorting method</string>
-    <string name="tv_video_dev_name">Trailer 1</string>
     <string name="bt_favorite">Favorite</string>
     <string name="bt_unfavorite">Unfavorite</string>
+    <string name="tv_overview">Overview</string>
+    <string name="tv_videos">Videos</string>
+    <string name="tv_reviews">Reviews</string>
     <string-array name="sorting_array">
         <item>Popularity</item>
         <item>Top rated</item>
+        <item>Favorites</item>
     </string-array>
 </resources>

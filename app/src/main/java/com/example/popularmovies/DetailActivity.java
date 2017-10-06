@@ -15,7 +15,6 @@ import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,7 +42,6 @@ import java.net.URL;
 public class DetailActivity extends AppCompatActivity implements VideosAdapter.VideosAdapterOnClickHandler {
 
 
-    private static final String TAG = DetailActivity.class.getSimpleName() + "dbg";
     private MovieParcelable movieParcelable;
     private ProgressBar mLoadingIndicator;
     private VideosAdapter mVideosAdapter;

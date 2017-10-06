@@ -8,12 +8,27 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 
 public class MovieDbJsonUtils {
-    private static final String TAG = MovieDbJsonUtils.class.getSimpleName();
+
+    public static String[] getPostersStringsFromIdsArray(String[] movieIds) throws IOException, JSONException {
+        ArrayList<String> posterStrings = new ArrayList<>();
+        for (String movieId : movieIds){
+            URL url = NetworkUtils.buildUrlForMovieDetail(movieId);
+            String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
+            MovieParcelable movieParcelable = MovieDbJsonUtils.getMovieDetailFromJson(jsonResponse);
+            if (movieParcelable != null) {
+                posterStrings.add(movieParcelable.getPosterPath());
+            }
+        }
+
+        return posterStrings.toArray(new String[0]);
+    }
 
     public static String[] getPostersStringsFromJson(String moviesJsonStr)
             throws JSONException {

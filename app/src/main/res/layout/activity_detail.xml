@@ -74,16 +74,52 @@
         </LinearLayout>
 
         <TextView
+            android:text="@string/tv_overview"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:layout_height="wrap_content" />
+
+        <TextView
             android:id="@+id/tv_overview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
-            android:padding="8dp"
-            android:textSize="18sp" />
+            android:padding="8dp"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:text="@string/tv_videos"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
+            android:layout_height="wrap_content" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_movie_videos"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="3dp"
+            android:background="@android:color/darker_gray" />
+
+        <TextView
+            android:text="@string/tv_reviews"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
             android:layout_height="wrap_content" />
 
         <android.support.v7.widget.RecyclerView

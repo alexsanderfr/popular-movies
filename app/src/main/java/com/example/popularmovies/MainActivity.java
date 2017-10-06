@@ -3,6 +3,7 @@ package com.example.popularmovies;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -23,6 +24,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 
 import com.example.popularmovies.adapter.MoviesAdapter;
+import com.example.popularmovies.data.MovieContract;
 import com.example.popularmovies.model.MovieParcelable;
 import com.example.popularmovies.utilities.MovieDbJsonUtils;
 import com.example.popularmovies.utilities.NetworkUtils;
@@ -31,6 +33,7 @@ import org.json.JSONException;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements MoviesAdapter.MoviesAdapterOnClickHandler {
 
@@ -75,11 +78,18 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         String key = getString(R.string.sorting_method);
         String sortingMethod = sharedPref.getString(key, "popular");
-        if (sortingMethod.equals("popular")) {
-            spinner.setSelection(0);
-        } else if (sortingMethod.equals("top_rated")) {
-            spinner.setSelection(1);
+        switch (sortingMethod) {
+            case "popular":
+                spinner.setSelection(0);
+                break;
+            case "top_rated":
+                spinner.setSelection(1);
+                break;
+            case "favorites":
+                spinner.setSelection(2);
+                break;
         }
+
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -93,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                     case "Top rated":
                         editor.putString(getString(R.string.sorting_method), "top_rated");
                         break;
+                    case "Favorites":
+                        editor.putString(getString(R.string.sorting_method), "favorites");
                 }
                 editor.apply();
                 loadMoviePostersData();
@@ -147,11 +159,24 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
             NetworkInfo netInfo = cm.getActiveNetworkInfo();
             if (netInfo != null && netInfo.isConnectedOrConnecting()) {
                 try {
-                    URL url = NetworkUtils.buildUrlForDiscover(params[0]);
-                    String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
-                    mMovieIdsArray = MovieDbJsonUtils.getMovieIdsFromJson(jsonResponse);
-                    return MovieDbJsonUtils
-                            .getPostersStringsFromJson(jsonResponse);
+                    if (params[0].equals("favorites")) {
+                        ArrayList<String> movieIds = new ArrayList<>();
+                        Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,null, null, null, null);
+                        if (cursor != null && cursor.moveToFirst()) {
+                            do {
+                                movieIds.add(cursor.getString(cursor.getColumnIndex("movie_id")));
+                            } while (cursor.moveToNext());
+                            cursor.close();
+                        }
+                        mMovieIdsArray = movieIds.toArray(new String[0]);
+                        return MovieDbJsonUtils.getPostersStringsFromIdsArray(mMovieIdsArray);
+                    } else {
+                        URL url = NetworkUtils.buildUrlForDiscover(params[0]);
+                        String jsonResponse = NetworkUtils.getResponseFromHttpUrl(url);
+                        mMovieIdsArray = MovieDbJsonUtils.getMovieIdsFromJson(jsonResponse);
+                        return MovieDbJsonUtils
+                                .getPostersStringsFromJson(jsonResponse);
+                    }
 
                 } catch (JSONException | IOException e) {
                     e.printStackTrace();
