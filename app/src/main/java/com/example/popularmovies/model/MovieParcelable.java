@@ -11,6 +11,16 @@ public class MovieParcelable implements Parcelable {
     private String rating;
     private String date;
 
+    public String getRuntime() {
+        return runtime;
+    }
+
+    public void setRuntime(String runtime) {
+        this.runtime = runtime;
+    }
+
+    private String runtime;
+
     private MovieParcelable(Parcel in) {
         id = in.readString();
         title = in.readString();
@@ -18,6 +28,7 @@ public class MovieParcelable implements Parcelable {
         plot = in.readString();
         rating = in.readString();
         date = in.readString();
+        runtime = in.readString();
     }
 
     public MovieParcelable() {
@@ -49,6 +60,7 @@ public class MovieParcelable implements Parcelable {
         dest.writeString(plot);
         dest.writeString(rating);
         dest.writeString(date);
+        dest.writeString(runtime);
     }
 
     public String getId(){

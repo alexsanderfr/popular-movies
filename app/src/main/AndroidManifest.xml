@@ -18,13 +18,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".DetailActivity" />
+        <activity
+            android:name=".DetailActivity"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
 
         <provider
             android:name="com.example.popularmovies.data.MovieProvider"
             android:authorities="com.example.popularmovies"
-            android:exported="false">
-        </provider>
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -104,6 +104,7 @@ public class MovieDbJsonUtils {
         final String OWM_MESSAGE_PLOT = "overview";
         final String OWM_MESSAGE_DATE = "release_date";
         final String OWM_MESSAGE_RATING = "vote_average";
+        final String OWM_MESSAGE_RUNTIME = "runtime";
         final String OWM_POSTER_PATH = "poster_path";
         final String BASE_POSTER_URL = "https://image.tmdb.org/t/p/";
         final String POSTER_SIZE = "w500/";
@@ -128,6 +129,7 @@ public class MovieDbJsonUtils {
         movieParcelable.setDate(moviesJson.getString(OWM_MESSAGE_DATE));
         movieParcelable.setPlot(moviesJson.getString(OWM_MESSAGE_PLOT));
         movieParcelable.setRating(moviesJson.getString(OWM_MESSAGE_RATING));
+        movieParcelable.setRuntime(moviesJson.getString(OWM_MESSAGE_RUNTIME));
         String posterUrl = BASE_POSTER_URL + POSTER_SIZE + moviesJson.getString(OWM_POSTER_PATH);
         movieParcelable.setPosterPath(posterUrl);
 

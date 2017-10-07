@@ -42,24 +42,24 @@
 
                 <Button
                     android:id="@+id/bt_favorite"
+                    style="@style/Widget.AppCompat.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_favorite"
-                    android:drawableStart="@drawable/ic_favorite"
-                    android:onClick="onClickFavorite"
                     android:layout_margin="4dp"
+                    android:drawableTop="@drawable/ic_favorite"
+                    android:onClick="onClickFavorite"
                     android:text="@string/bt_favorite"
                     android:textColor="@android:color/black"
                     android:visibility="gone" />
 
                 <Button
                     android:id="@+id/bt_unfavorite"
+                    style="@style/Widget.AppCompat.Button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_unfavorite"
-                    android:drawableStart="@drawable/ic_unfavorite"
-                    android:onClick="onClickUnfavorite"
                     android:layout_margin="4dp"
+                    android:drawableTop="@drawable/ic_unfavorite"
+                    android:onClick="onClickUnfavorite"
                     android:text="@string/bt_unfavorite"
                     android:textColor="@android:color/black"
                     android:visibility="gone" />
@@ -70,12 +70,18 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
 
+                <TextView
+                    android:id="@+id/tv_runtime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
+
 
                 <TextView
                     android:id="@+id/tv_rating"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Large" />
+                    android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 
             </LinearLayout>
         </LinearLayout>

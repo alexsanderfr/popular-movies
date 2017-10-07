@@ -11,7 +11,9 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.res.ResourcesCompat;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -51,6 +53,10 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
 
         Intent intent = getIntent();
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
@@ -127,9 +133,13 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_refresh) {
-            refresh();
-            return true;
+        switch (item.getItemId()) {
+            case R.id.action_refresh:
+                refresh();
+                return true;
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -223,9 +233,13 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
                 TextView overviewTextView = (TextView) findViewById(R.id.tv_overview);
                 overviewTextView.setText(result.getPlot());
                 TextView yearTextView = (TextView) findViewById(R.id.tv_year);
-                yearTextView.setText(result.getDate());
+                yearTextView.setText(Utils.formatDate(result.getDate(), getApplicationContext()));
+                TextView runtimeTextView = (TextView) findViewById(R.id.tv_runtime);
+                String runtime = result.getRuntime() + " min";
+                runtimeTextView.setText(runtime);
                 TextView ratingTextView = (TextView) findViewById(R.id.tv_rating);
-                ratingTextView.setText(result.getRating());
+                String rating = result.getRating() + "/10";
+                ratingTextView.setText(rating);
             } else {
                 View view = findViewById(android.R.id.content);
                 Snackbar.make(view, getString(R.string.connectivity_error), Snackbar.LENGTH_SHORT)
@@ -259,7 +273,7 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
         @Override
         protected void onPostExecute(Video[] result) {
             if (result != null) {
-                if (result.length==0) {
+                if (result.length == 0) {
                     TextView videoTextView = (TextView) findViewById(R.id.tv_videos);
                     videoTextView.setVisibility(View.GONE);
                 }
@@ -296,7 +310,7 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
         @Override
         protected void onPostExecute(Review[] result) {
             if (result != null) {
-                if (result.length==0) {
+                if (result.length == 0) {
                     TextView reviewTextView = (TextView) findViewById(R.id.tv_reviews);
                     reviewTextView.setVisibility(View.GONE);
                 }
