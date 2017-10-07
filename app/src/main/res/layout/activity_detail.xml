@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:scrollbars="vertical"
     tools:context=".DetailActivity">
 
     <LinearLayout
@@ -41,21 +42,27 @@
 
                 <Button
                     android:id="@+id/bt_favorite"
-                    android:onClick="onClickFavorite"
-                    android:textColor="@android:color/black"
-                    android:text="@string/bt_favorite"
                     android:layout_width="wrap_content"
-                    android:visibility="gone"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_favorite"
+                    android:drawableStart="@drawable/ic_favorite"
+                    android:onClick="onClickFavorite"
+                    android:layout_margin="4dp"
+                    android:text="@string/bt_favorite"
+                    android:textColor="@android:color/black"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/bt_unfavorite"
-                    android:visibility="gone"
-                    android:textColor="@android:color/black"
-                    android:onClick="onClickUnfavorite"
-                    android:text="@string/bt_unfavorite"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:drawableLeft="@drawable/ic_unfavorite"
+                    android:drawableStart="@drawable/ic_unfavorite"
+                    android:onClick="onClickUnfavorite"
+                    android:layout_margin="4dp"
+                    android:text="@string/bt_unfavorite"
+                    android:textColor="@android:color/black"
+                    android:visibility="gone" />
 
                 <TextView
                     android:id="@+id/tv_year"
@@ -74,20 +81,20 @@
         </LinearLayout>
 
         <TextView
-            android:text="@string/tv_overview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_width="wrap_content"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-            android:layout_height="wrap_content" />
+            android:text="@string/tv_overview"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 
         <TextView
             android:id="@+id/tv_overview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Small" />
 
         <View
             android:layout_width="match_parent"
@@ -95,13 +102,14 @@
             android:background="@android:color/darker_gray" />
 
         <TextView
-            android:text="@string/tv_videos"
+            android:id="@+id/tv_videos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_width="wrap_content"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-            android:layout_height="wrap_content" />
+            android:text="@string/tv_videos"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_movie_videos"
@@ -114,13 +122,14 @@
             android:background="@android:color/darker_gray" />
 
         <TextView
-            android:text="@string/tv_reviews"
+            android:id="@+id/tv_reviews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:layout_width="wrap_content"
-            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium"
-            android:layout_height="wrap_content" />
+            android:text="@string/tv_reviews"
+            android:textAppearance="@android:style/TextAppearance.DeviceDefault.Medium" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_movie_reviews"

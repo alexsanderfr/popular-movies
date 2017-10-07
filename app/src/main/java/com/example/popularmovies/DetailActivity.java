@@ -259,6 +259,10 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
         @Override
         protected void onPostExecute(Video[] result) {
             if (result != null) {
+                if (result.length==0) {
+                    TextView videoTextView = (TextView) findViewById(R.id.tv_videos);
+                    videoTextView.setVisibility(View.GONE);
+                }
                 mVideosAdapter.setVideos(result);
             } else {
                 View view = findViewById(android.R.id.content);
@@ -292,6 +296,10 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
         @Override
         protected void onPostExecute(Review[] result) {
             if (result != null) {
+                if (result.length==0) {
+                    TextView reviewTextView = (TextView) findViewById(R.id.tv_reviews);
+                    reviewTextView.setVisibility(View.GONE);
+                }
                 mReviewsAdapter.setReviews(result);
             } else {
                 View view = findViewById(android.R.id.content);
