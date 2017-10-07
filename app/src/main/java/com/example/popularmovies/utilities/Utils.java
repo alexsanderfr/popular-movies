@@ -1,6 +1,8 @@
 package com.example.popularmovies.utilities;
 
+import android.app.Activity;
 import android.content.Context;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.example.popularmovies.BuildConfig;
@@ -23,6 +25,16 @@ public class Utils {
 
     static String getApiKey() {
         return BuildConfig.MOVIE_DB_API_KEY;
+    }
+
+    public static int numberOfColumns(Context context) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        ((Activity)context).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int widthDivider = 500;
+        int width = displayMetrics.widthPixels;
+        int nColumns = width / widthDivider;
+        if (nColumns < 2) return 2;
+        return nColumns;
     }
 
     public static String formatDate(String dateString, Context context) {

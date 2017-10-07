@@ -9,6 +9,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -28,6 +29,7 @@ import com.example.popularmovies.data.MovieContract;
 import com.example.popularmovies.model.MovieParcelable;
 import com.example.popularmovies.utilities.MovieDbJsonUtils;
 import com.example.popularmovies.utilities.NetworkUtils;
+import com.example.popularmovies.utilities.Utils;
 
 import org.json.JSONException;
 
@@ -39,7 +41,14 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
 
     private MoviesAdapter mMoviesAdapter;
     private String[] mMovieIdsArray = null;
+    private String[] mMoviePostersData;
     private ProgressBar mLoadingIndicator;
+    private Parcelable mState;
+    GridLayoutManager mLayoutManager;
+    private final String STATE_KEY = "state";
+    private final String POSTER_DATA_KEY = "poster_data";
+    private final String MOVIE_IDS_KEY = "movie_ids";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,19 +56,29 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         setContentView(R.layout.activity_main);
 
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv_movies);
-        int numberOfColumns = 2;
-        recyclerView.setLayoutManager(new GridLayoutManager(this, numberOfColumns));
+        mLayoutManager = new GridLayoutManager(this, Utils.numberOfColumns(MainActivity.this));
+        recyclerView.setLayoutManager(mLayoutManager);
         mMoviesAdapter = new MoviesAdapter(this, this);
         recyclerView.setAdapter(mMoviesAdapter);
         mLoadingIndicator = (ProgressBar) findViewById(R.id.pb_loading_indicator);
-
     }
 
-    private void loadMoviePostersData() {
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        String key = getString(R.string.sorting_method);
-        String sortingMethod = sharedPref.getString(key, "popular");
-        new FetchMoviePostersTask().execute(sortingMethod);
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArray(POSTER_DATA_KEY, mMoviePostersData);
+        outState.putParcelable(STATE_KEY, mLayoutManager.onSaveInstanceState());
+        outState.putStringArray(MOVIE_IDS_KEY, mMovieIdsArray);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle inState) {
+        super.onRestoreInstanceState(inState);
+        if (inState != null) {
+            mMoviePostersData = inState.getStringArray(POSTER_DATA_KEY);
+            mState = inState.getParcelable(STATE_KEY);
+            mMovieIdsArray = inState.getStringArray(MOVIE_IDS_KEY);
+        }
     }
 
     @Override
@@ -78,22 +97,25 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
         String key = getString(R.string.sorting_method);
         String sortingMethod = sharedPref.getString(key, "popular");
+
         switch (sortingMethod) {
             case "popular":
                 spinner.setSelection(0);
+                spinner.setTag(0);
                 break;
             case "top_rated":
                 spinner.setSelection(1);
+                spinner.setTag(1);
                 break;
             case "favorites":
                 spinner.setSelection(2);
+                spinner.setTag(2);
                 break;
         }
 
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                mMoviesAdapter.setPostersData(null);
                 SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
                 switch (spinner.getSelectedItem().toString()) {
@@ -105,10 +127,16 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                         break;
                     case "Favorites":
                         editor.putString(getString(R.string.sorting_method), "favorites");
+                        break;
                 }
                 editor.apply();
-                loadMoviePostersData();
 
+                if (((int)spinner.getTag()) != position) {
+                    spinner.setTag(position);
+                    refresh();
+                } else {
+                    loadMoviePostersData();
+                }
             }
 
             @Override
@@ -127,7 +155,25 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         return super.onOptionsItemSelected(item);
     }
 
+    private void loadMoviePostersData() {
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        String key = getString(R.string.sorting_method);
+        String sortingMethod = sharedPref.getString(key, "popular");
+        if (mMoviePostersData != null) {
+            if (mState != null) {
+                mLayoutManager.onRestoreInstanceState(mState);
+            }
+            mMoviesAdapter.setPostersData(mMoviePostersData);
+        } else {
+            new FetchMoviePostersTask().execute(sortingMethod);
+        }
+
+    }
+
     private void refresh() {
+        mMovieIdsArray = null;
+        mMoviePostersData = null;
+        mState = null;
         mMoviesAdapter.setPostersData(null);
         loadMoviePostersData();
     }
@@ -161,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
                 try {
                     if (params[0].equals("favorites")) {
                         ArrayList<String> movieIds = new ArrayList<>();
-                        Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,null, null, null, null);
+                        Cursor cursor = getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI, null, null, null, null);
                         if (cursor != null && cursor.moveToFirst()) {
                             do {
                                 movieIds.add(cursor.getString(cursor.getColumnIndex("movie_id")));
@@ -191,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements MoviesAdapter.Mov
         protected void onPostExecute(String[] moviePostersData) {
             mLoadingIndicator.setVisibility(View.INVISIBLE);
             if (moviePostersData != null) {
+                mMoviePostersData = moviePostersData;
                 mMoviesAdapter.setPostersData(moviePostersData);
             } else {
                 View view = findViewById(android.R.id.content);
