@@ -89,14 +89,14 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
         final String movieId = movieParcelable.getId();
         final Button favoriteButton = (Button) findViewById(R.id.bt_favorite);
         final Button unfavoriteButton = (Button) findViewById(R.id.bt_unfavorite);
-        AsyncTask asyncTask = new AsyncTask<Object, Void, Cursor>() {
+        AsyncTask<String, Void, Cursor> asyncTask = new AsyncTask<String, Void, Cursor>() {
             @Override
-            protected Cursor doInBackground(Object... params) {
+            protected Cursor doInBackground(String... params) {
                 try {
                     return getContentResolver().query(MovieContract.MovieEntry.CONTENT_URI,
                             null,
                             "movie_id=?",
-                            new String[]{movieId},
+                            new String[]{params[0]},
                             null);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -229,7 +229,9 @@ public class DetailActivity extends AppCompatActivity implements VideosAdapter.V
                 setTitle(result.getTitle());
                 ImageView posterImageView = (ImageView) findViewById(R.id.iv_movie_poster_detail);
                 Picasso.with(DetailActivity.this).load(Utils.getImageSize(getResources()
-                        .getDisplayMetrics().density, result.getPosterPath())).into(posterImageView);
+                        .getDisplayMetrics().density, result.getPosterPath()))
+                        .placeholder(R.drawable.ic_placeholder_image).error(R.drawable.ic_error)
+                        .into(posterImageView);
                 TextView overviewTextView = (TextView) findViewById(R.id.tv_overview);
                 overviewTextView.setText(result.getPlot());
                 TextView yearTextView = (TextView) findViewById(R.id.tv_year);

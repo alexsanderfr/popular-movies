@@ -10,6 +10,7 @@
     <string name="tv_overview">Overview</string>
     <string name="tv_videos">Videos</string>
     <string name="tv_reviews">Reviews</string>
+    <string name="movie_poster_content_description">Movie poster</string>
     <string-array name="sorting_array">
         <item>Popularity</item>
         <item>Top rated</item>

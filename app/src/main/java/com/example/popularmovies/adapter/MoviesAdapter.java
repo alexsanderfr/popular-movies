@@ -39,7 +39,8 @@ public class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.MovieViewH
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         String image = Utils.getImageSize(mContext.getResources()
                 .getDisplayMetrics().density, mPostersData[position]);
-        Picasso.with(mContext).load(image).into(holder.mPosterImageView);
+        Picasso.with(mContext).load(image).placeholder(R.drawable.ic_placeholder_image)
+                .error(R.drawable.ic_error).into(holder.mPosterImageView);
     }
 
     @Override
