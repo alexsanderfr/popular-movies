@@ -1,4 +1,4 @@
-# Reddit App
+# Popular Movies
 
 Popular movies app for Udacity's Android Developer Nanodegree
 
