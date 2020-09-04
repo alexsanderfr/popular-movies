@@ -1,6 +1,6 @@
 # Popular Movies
 
-Popular movies app for Udacity's Android Developer Nanodegree
+App for browsing popular movies from OMDB
 
 ### Screenshots
 
